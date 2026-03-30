@@ -4,6 +4,7 @@ A simple and user-friendly Python desktop application built with **Tkinter** and
 <p align="center">
   <img src="app-screenshot.png" width="700" alt="YouTube Video Downloader demo"/>
 </p>
+
 ## Features
 
 - **Simple GUI**: Clean and intuitive interface built with Tkinter
