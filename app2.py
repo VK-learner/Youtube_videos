@@ -14,9 +14,8 @@ if not os.path.exists(SAVE_FOLDER):
 download_history = []
 
 def play_bell():
-    # Loud "ding-dong" bell effect
-    winsound.Beep(2000, 400)   # sharp high pitch
-    winsound.Beep(1000, 600)   # deeper tone
+    winsound.Beep(2000, 400)
+    winsound.Beep(1000, 600)
 
 def progress_hook(d):
     if d['status'] == 'downloading':
@@ -30,7 +29,7 @@ def progress_hook(d):
             status_label.config(text="Downloading... size unknown")
     elif d['status'] == 'finished':
         status_label.config(text="Download completed!")
-        play_bell()  # 🔔 Play bell sound
+        play_bell()
     elif d['status'] == 'error':
         status_label.config(text="Download failed!")
 
@@ -40,21 +39,21 @@ def start_download():
         messagebox.showwarning("Input Error", "Please paste a video link!")
         return
 
-    # Ask user for custom filename
     custom_name = simpledialog.askstring("File Name", "Enter a name for the video file (without extension):")
     if not custom_name:
-        custom_name = "%(title)s"  # fallback to video title
+        custom_name = "%(title)s"
 
     def run_download():
         try:
             ydl_opts = {
                 'outtmpl': os.path.join(SAVE_FOLDER, f"{custom_name}.%(ext)s"),
-                'format': 'best[ext=mp4]',
-                'progress_hooks': [progress_hook]
+                'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+                'progress_hooks': [progress_hook],
+                'extractor_args': {'youtube': {'player_client': ['web', 'android']}},
+                'merge_output_format': 'mp4',
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                result = ydl.download([link])
-                # Save to history
+                ydl.download([link])
                 download_history.append(custom_name)
                 update_history()
         except Exception as e:
@@ -91,7 +90,6 @@ exit_button.pack(pady=5)
 status_label = tk.Label(root, text="", fg="blue")
 status_label.pack(pady=10)
 
-# History section
 history_label = tk.Label(root, text="Download History:")
 history_label.pack(pady=5)
 

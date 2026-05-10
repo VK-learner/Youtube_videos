@@ -1,24 +1,24 @@
 # YouTube Video Downloader
 
-A simple and user-friendly Python desktop application built with **Tkinter** and **yt-dlp** to download YouTube videos with real-time progress tracking.
+A simple Python desktop application built with **Tkinter** and **yt-dlp** to download YouTube videos with real-time progress tracking, custom file naming, and download history.
 
 ## Features
 
 - **Simple GUI**: Clean and intuitive interface built with Tkinter
-- **Real-time Progress**: Displays download percentage as the video is being downloaded
-- **Robust Error Handling**: Gracefully handles network errors and invalid URLs
-- **MP4 Format**: Automatically downloads videos in best MP4 quality
+- **Real-time Progress**: Displays download percentage as the video downloads
+- **Custom File Naming**: Prompts for a custom filename before each download
+- **Download History**: Tracks all downloaded files within the session
+- **Bell Notification**: Plays a sound when download completes
+- **Robust Format Selection**: Tries best available MP4 with fallbacks
 - **Threading**: Non-blocking downloads prevent GUI freezing
-- **Standalone Executable**: Can be packaged as a .exe file using PyInstaller
+- **Standalone Executable**: Can be packaged as a `.exe` using PyInstaller
 
 ## Project Structure
 
 ```
 Youtube_videos/
-├── app.py          # Main application with GUI implementation
-├── main.py         # Alternative entry point
-├── main2.py        # Additional script variant
-├── app.spec        # PyInstaller specification file
+├── app2.py         # Main application (current version)
+├── app2.spec       # PyInstaller specification file
 ├── icon.ico        # Application icon
 ├── dist/           # Compiled executable files
 └── build/          # Build artifacts
@@ -27,8 +27,9 @@ Youtube_videos/
 ## Requirements
 
 - Python 3.7 or higher
-- `tkinter` (usually comes with Python)
-- `yt-dlp` - YouTube downloader library
+- `tkinter` (comes with Python)
+- `yt-dlp` — YouTube downloader library
+- `ffmpeg` — Required for merging video and audio streams
 
 ## Installation
 
@@ -43,23 +44,29 @@ Youtube_videos/
    pip install yt-dlp
    ```
 
+3. Install ffmpeg and add it to PATH:
+   - Download from https://ffmpeg.org/download.html
+   - Add the `bin/` folder to your system PATH
+
 ## Usage
 
 Run the application:
 ```bash
-python app.py
+python app2.py
 ```
 
 ### How to Download
 
 1. Paste a YouTube video URL in the text field
 2. Click the **Download** button
-3. Watch the real-time progress percentage
-4. Videos are saved to `E:\youtube` directory (configurable in code)
+3. Enter a custom filename when prompted (or leave blank to use the video title)
+4. Watch the real-time progress percentage
+5. A bell sound plays when the download completes
+6. Videos are saved to `E:\youtube` by default
 
 ## Configuration
 
-You can customize the save location by modifying the `SAVE_FOLDER` variable in `app.py`:
+Change the save location by modifying `SAVE_FOLDER` in `app2.py`:
 
 ```python
 SAVE_FOLDER = r"E:\youtube"  # Change this path
@@ -67,46 +74,48 @@ SAVE_FOLDER = r"E:\youtube"  # Change this path
 
 ## Creating a Standalone Executable
 
-To package the application as a standalone .exe file:
-
 ```bash
 pip install pyinstaller
-pyinstaller app.spec
+pyinstaller app2.spec
 ```
 
-The executable will be generated in the `dist/` folder.
+The executable will be in the `dist/` folder.
 
 ## Technical Details
 
-- **Download Format**: Best quality MP4 format available
-- **Progress Tracking**: Uses yt-dlp's progress_hook callback
-- **Threading**: Downloads run in separate threads to prevent UI freezing
-- **Error Messages**: User-friendly error dialogs for invalid inputs or failed downloads
+- **Format Selection**: `bestvideo[ext=mp4]+bestaudio[ext=m4a]` with fallbacks — uses ffmpeg to merge streams
+- **Player Clients**: Forces `web` and `android` clients via `extractor_args` to work around YouTube's SABR streaming restrictions
+- **Progress Tracking**: Uses yt-dlp's `progress_hook` callback
+- **Threading**: Downloads run in a daemon thread to keep UI responsive
+- **Output Format**: Always merged to `.mp4`
+
+## Troubleshooting
+
+**Issue**: `Module not found` error
+- **Solution**: `pip install yt-dlp`
+
+**Issue**: Fragments skipped / empty file downloaded
+- **Solution**: Update yt-dlp (`pip install -U yt-dlp`) and ensure ffmpeg is on PATH
+
+**Issue**: `No supported JavaScript runtime` warning
+- **Solution**: Install Node.js from https://nodejs.org — yt-dlp uses it for YouTube extraction
+
+**Issue**: Permission denied when saving
+- **Solution**: Ensure the save folder exists and you have write permissions
 
 ## Future Enhancements
 
 - [ ] Playlist support
 - [ ] Audio-only download option
-- [ ] Multiple format selections
+- [ ] Format selection dropdown
 - [ ] Download queue management
 - [ ] Video thumbnail preview
-- [ ] History of downloaded videos
+- [ ] Persistent download history across sessions
 
 ## License
 
-This project is open source and available under the MIT License.
+MIT License
 
 ## Author
 
-**VK-learner** - Created as a simple utility for downloading YouTube videos
-
-## Troubleshooting
-
-**Issue**: "Module not found" error
-- **Solution**: Make sure to install yt-dlp: `pip install yt-dlp`
-
-**Issue**: Videos not downloading
-- **Solution**: Check your internet connection and ensure the YouTube URL is valid
-
-**Issue**: "Permission denied" when saving
-- **Solution**: Ensure the save folder path exists and you have write permissions
+**VK-learner** — Built as a practical utility for downloading YouTube videos
